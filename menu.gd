@@ -17,7 +17,7 @@ func _on_file_dialog_files_selected(paths: PackedStringArray) -> void:
 	print("Attempting to load minapaks")
 
 	for path in paths:
-		var pass_code = Global.pak_reader.import_minapak(path)
+		var pass_code = Global.pak_reader.import_minapak(path,"res://songs/")
 		var name = pass_code.substr(pass_code.find(": ") + 2, pass_code.length())  # Extract the name after ": "
 		var err_code = pass_code.substr(0, pass_code.find(": "))  # Extract the error code before ": "
 	
@@ -44,4 +44,5 @@ func _on_button_pressed() -> void:
 	tween.set_trans(Tween.TRANS_QUINT)
 	tween.tween_property($ColorRect,"position:x",0,1).set_ease(Tween.EASE_IN_OUT)
 	await tween.finished
+	await Global.clear_temp()
 	get_tree().change_scene_to_file("res://editor.tscn")

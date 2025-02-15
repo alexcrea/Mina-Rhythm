@@ -1,0 +1,235 @@
+[gd_scene load_steps=9 format=3 uid="uid://f54s1jbmi2r3"]
+
+[ext_resource type="Script" path="res://res_button.gd" id="1_7gjrt"]
+[ext_resource type="PackedScene" uid="uid://bee5wq3wrc2uw" path="res://popup.tscn" id="1_anslq"]
+[ext_resource type="Script" path="res://editor.gd" id="1_q4cuq"]
+[ext_resource type="Script" path="res://build_pak.gd" id="2_rqw11"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8p47"]
+bg_color = Color(0.113725, 0.113725, 0.113725, 0.843137)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xegci"]
+bg_color = Color(0.0392157, 0.0392157, 0.0392157, 0.560784)
+corner_radius_top_right = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fwd5w"]
+bg_color = Color(0.0392157, 0.0392157, 0.0392157, 0.560784)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ateff"]
+bg_color = Color(0.0392157, 0.0392157, 0.0392157, 0.560784)
+corner_radius_bottom_right = 22
+
+[node name="CanvasLayer" type="CanvasLayer"]
+follow_viewport_enabled = true
+script = ExtResource("1_q4cuq")
+
+[node name="Control" parent="." instance=ExtResource("1_anslq")]
+title = "ERROR!"
+visible = false
+unresizable = true
+always_on_top = true
+popup_window = true
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+title = "ERROR!"
+initial_position = 2
+unresizable = true
+always_on_top = true
+popup_window = true
+ok_button_text = "Overwrite"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 31.0
+color = Color(0.136826, 0.136826, 0.136826, 1)
+
+[node name="TabContainer" type="TabContainer" parent="."]
+offset_right = 1152.0
+offset_bottom = 63.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_p8p47")
+current_tab = 0
+
+[node name="PakInfo" type="Control" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Panel3" type="Panel" parent="TabContainer/PakInfo"]
+layout_mode = 0
+offset_top = 31.0
+offset_right = 426.0
+offset_bottom = 94.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xegci")
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/PakInfo/Panel3"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 9.0
+offset_right = 415.0
+offset_bottom = 53.0
+placeholder_text = "Pak name goes here! this field is required"
+
+[node name="Panel" type="Panel" parent="TabContainer/PakInfo"]
+layout_mode = 0
+offset_top = 93.0
+offset_right = 426.0
+offset_bottom = 262.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_fwd5w")
+
+[node name="TextEdit" type="TextEdit" parent="TabContainer/PakInfo/Panel"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 9.0
+offset_right = 416.0
+offset_bottom = 157.0
+placeholder_text = "description about your minapak eg, producer of the song, other credits or information"
+wrap_mode = 1
+
+[node name="Panel2" type="Panel" parent="TabContainer/PakInfo"]
+layout_mode = 0
+offset_top = 261.0
+offset_right = 426.0
+offset_bottom = 617.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ateff")
+
+[node name="musicdialog" type="FileDialog" parent="TabContainer/PakInfo/Panel2"]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 2
+size = Vector2i(868, 535)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.mp3,*.wav,*.ogg")
+use_native_dialog = true
+
+[node name="previewdialog" type="FileDialog" parent="TabContainer/PakInfo/Panel2"]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 2
+size = Vector2i(868, 535)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png,*.jpg,*.jpeg")
+use_native_dialog = true
+
+[node name="videodialog" type="FileDialog" parent="TabContainer/PakInfo/Panel2"]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 2
+size = Vector2i(868, 535)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.mp4,*.mov")
+use_native_dialog = true
+
+[node name="icondialog" type="FileDialog" parent="TabContainer/PakInfo/Panel2"]
+title = "Open a File"
+initial_position = 2
+size = Vector2i(868, 535)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png,*.jpg,*.jpeg")
+use_native_dialog = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/PakInfo/Panel2"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 3.0
+offset_right = 402.0
+offset_bottom = 2039.0
+
+[node name="iconsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
+layout_mode = 2
+tooltip_text = "icon to be displayed for pak"
+text = "minapak icon (unset)"
+script = ExtResource("1_7gjrt")
+dialog = NodePath("../../icondialog")
+musicdialog = NodePath("../../musicdialog")
+previewdialog = NodePath("../../previewdialog")
+videodialog = NodePath("../../videodialog")
+icondialog = NodePath("../../icondialog")
+paknamedialog = NodePath("../../../Panel3/LineEdit")
+pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
+
+[node name="videosel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
+layout_mode = 2
+tooltip_text = "background video for visuals to go with the music. *Video audio will not be used, please provide as an audio file"
+text = "background video (unset)"
+script = ExtResource("1_7gjrt")
+dialog = NodePath("../../videodialog")
+musicdialog = NodePath("../../musicdialog")
+previewdialog = NodePath("../../previewdialog")
+videodialog = NodePath("../../videodialog")
+icondialog = NodePath("../../icondialog")
+paknamedialog = NodePath("../../../Panel3/LineEdit")
+pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
+
+[node name="previewsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
+layout_mode = 2
+tooltip_text = "preview image of the pak to be displayed, will default to first frame of background video if unprovided"
+text = "preview image (unset)"
+script = ExtResource("1_7gjrt")
+dialog = NodePath("../../previewdialog")
+musicdialog = NodePath("../../musicdialog")
+previewdialog = NodePath("../../previewdialog")
+videodialog = NodePath("../../videodialog")
+icondialog = NodePath("../../icondialog")
+paknamedialog = NodePath("../../../Panel3/LineEdit")
+pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
+
+[node name="musicsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
+layout_mode = 2
+tooltip_text = "the music the pak will use, this field is required"
+text = "music (unset)"
+script = ExtResource("1_7gjrt")
+dialog = NodePath("../../musicdialog")
+musicdialog = NodePath("../../musicdialog")
+previewdialog = NodePath("../../previewdialog")
+videodialog = NodePath("../../videodialog")
+icondialog = NodePath("../../icondialog")
+paknamedialog = NodePath("../../../Panel3/LineEdit")
+pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
+
+[node name="BeatMap" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Button" type="Button" parent="." node_paths=PackedStringArray("tabcontroler", "colorrect", "iconfiledialog", "videofiledialog", "previewfiledialog", "musicfiledialog", "pakinfobox", "paknamebox", "reqpopup", "confirmpopup")]
+offset_left = 653.0
+offset_right = 1152.0
+offset_bottom = 63.0
+tooltip_text = "Compile pak to a .minapak file"
+text = "BUILD PAK"
+script = ExtResource("2_rqw11")
+tabcontroler = NodePath("../TabContainer")
+colorrect = NodePath("../ColorRect")
+iconfiledialog = NodePath("../TabContainer/PakInfo/Panel2/icondialog")
+videofiledialog = NodePath("../TabContainer/PakInfo/Panel2/videodialog")
+previewfiledialog = NodePath("../TabContainer/PakInfo/Panel2/previewdialog")
+musicfiledialog = NodePath("../TabContainer/PakInfo/Panel2/musicdialog")
+pakinfobox = NodePath("../TabContainer/PakInfo/Panel/TextEdit")
+paknamebox = NodePath("../TabContainer/PakInfo/Panel3/LineEdit")
+reqpopup = NodePath("../Control")
+confirmpopup = NodePath("../ConfirmationDialog")
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+visible = false
+top_level = true
+offset_top = -399.0
+offset_right = 2441.0
+offset_bottom = 1208.0
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/iconsel" to="TabContainer/PakInfo/Panel2/VBoxContainer/iconsel" method="_on_pressed"]
+[connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/videosel" to="TabContainer/PakInfo/Panel2/VBoxContainer/videosel" method="_on_pressed"]
+[connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/previewsel" to="TabContainer/PakInfo/Panel2/VBoxContainer/previewsel" method="_on_pressed"]
+[connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/musicsel" to="TabContainer/PakInfo/Panel2/VBoxContainer/musicsel" method="_on_pressed"]
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]

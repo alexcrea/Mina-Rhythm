@@ -10,19 +10,20 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_23ukn"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ekass"]
 
 [sub_resource type="Theme" id="Theme_qfrjs"]
-Button/styles/focus = SubResource("StyleBoxEmpty_23ukn")
+Button/styles/focus = SubResource("StyleBoxEmpty_ekass")
 
 [sub_resource type="LabelSettings" id="LabelSettings_o5vkj"]
+font_size = 24
 
 [node name="Control" type="Control" node_paths=PackedStringArray("internal_button", "label")]
 layout_mode = 3
 anchors_preset = 0
 offset_left = -48.0
 offset_right = 265.0
-offset_bottom = 77.0
+offset_bottom = 96.175
 script = ExtResource("1_ii6sj")
 internal_button = NodePath("PanelContainer/Button")
 label = NodePath("Label")
@@ -31,7 +32,7 @@ label = NodePath("Label")
 layout_mode = 0
 offset_left = -44.0
 offset_right = 313.0
-offset_bottom = 77.0
+offset_bottom = 92.28
 theme_override_styles/panel = SubResource("StyleBoxFlat_b2exo")
 
 [node name="Button" type="Button" parent="PanelContainer"]
@@ -43,13 +44,14 @@ clip_text = true
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
-offset_left = 48.0
+offset_left = 56.02
 offset_top = 16.0
-offset_right = 302.0
-offset_bottom = 60.0
+offset_right = 310.02
+offset_bottom = 74.9
 label_settings = SubResource("LabelSettings_o5vkj")
-horizontal_alignment = 2
 vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 3
 script = ExtResource("2_bie10")
 
 [connection signal="focus_entered" from="PanelContainer/Button" to="." method="_on_button_focus_entered"]

@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://f54s1jbmi2r3"]
+[gd_scene load_steps=14 format=3 uid="uid://f54s1jbmi2r3"]
 
 [ext_resource type="Script" path="res://res_button.gd" id="1_7gjrt"]
 [ext_resource type="PackedScene" uid="uid://bee5wq3wrc2uw" path="res://popup.tscn" id="1_anslq"]
 [ext_resource type="Script" path="res://editor.gd" id="1_q4cuq"]
 [ext_resource type="Script" path="res://build_pak.gd" id="2_rqw11"]
+[ext_resource type="Script" path="res://beat_map.gd" id="4_uns8v"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8p47"]
 bg_color = Color(0.113725, 0.113725, 0.113725, 0.843137)
@@ -15,12 +16,32 @@ corner_radius_top_right = 22
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fwd5w"]
 bg_color = Color(0.0392157, 0.0392157, 0.0392157, 0.560784)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ateff"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uelqu"]
 bg_color = Color(0.0392157, 0.0392157, 0.0392157, 0.560784)
 corner_radius_bottom_right = 22
 
-[node name="CanvasLayer" type="CanvasLayer"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ateff"]
+bg_color = Color(0.0392157, 0.0392157, 0.0392157, 0.560784)
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_a135k"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qjno7"]
+size = Vector2(218, 600)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1nle0"]
+size = Vector2(1, 1)
+
+[node name="CanvasLayer" type="CanvasLayer" node_paths=PackedStringArray("lanes")]
+follow_viewport_enabled = true
 script = ExtResource("1_q4cuq")
+lanes = [NodePath("TabContainer/BeatMap/ColorRect"), NodePath("TabContainer/BeatMap/ColorRect2"), NodePath("TabContainer/BeatMap/ColorRect3"), NodePath("TabContainer/BeatMap/ColorRect4")]
+
+[node name="ColorRect3" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.1209, 0.127877, 0.13, 1)
 
 [node name="Control" parent="." instance=ExtResource("1_anslq")]
 title = "ERROR!"
@@ -46,9 +67,10 @@ color = Color(0.136826, 0.136826, 0.136826, 1)
 offset_right = 1152.0
 offset_bottom = 63.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_p8p47")
-current_tab = 0
+current_tab = 1
 
 [node name="PakInfo" type="Control" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -88,7 +110,7 @@ layout_mode = 0
 offset_top = 261.0
 offset_right = 426.0
 offset_bottom = 617.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_ateff")
+theme_override_styles/panel = SubResource("StyleBoxFlat_uelqu")
 
 [node name="musicdialog" type="FileDialog" parent="TabContainer/PakInfo/Panel2"]
 auto_translate_mode = 1
@@ -138,9 +160,9 @@ layout_mode = 0
 offset_left = 12.0
 offset_top = 3.0
 offset_right = 402.0
-offset_bottom = 527.0
+offset_bottom = 2039.0
 
-[node name="iconsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog")]
+[node name="iconsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
 layout_mode = 2
 tooltip_text = "icon to be displayed for pak"
 text = "minapak icon (unset)"
@@ -152,8 +174,9 @@ videodialog = NodePath("../../videodialog")
 icondialog = NodePath("../../icondialog")
 paknamedialog = NodePath("../../../Panel3/LineEdit")
 pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
 
-[node name="videosel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog")]
+[node name="videosel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
 layout_mode = 2
 tooltip_text = "background video for visuals to go with the music. *Video audio will not be used, please provide as an audio file"
 text = "background video (unset)"
@@ -165,8 +188,9 @@ videodialog = NodePath("../../videodialog")
 icondialog = NodePath("../../icondialog")
 paknamedialog = NodePath("../../../Panel3/LineEdit")
 pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
 
-[node name="previewsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog")]
+[node name="previewsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
 layout_mode = 2
 tooltip_text = "preview image of the pak to be displayed, will default to first frame of background video if unprovided"
 text = "preview image (unset)"
@@ -178,8 +202,9 @@ videodialog = NodePath("../../videodialog")
 icondialog = NodePath("../../icondialog")
 paknamedialog = NodePath("../../../Panel3/LineEdit")
 pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
 
-[node name="musicsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog")]
+[node name="musicsel" type="Button" parent="TabContainer/PakInfo/Panel2/VBoxContainer" node_paths=PackedStringArray("dialog", "musicdialog", "previewdialog", "videodialog", "icondialog", "paknamedialog", "pakinfodialog", "root")]
 layout_mode = 2
 tooltip_text = "the music the pak will use, this field is required"
 text = "music (unset)"
@@ -191,13 +216,99 @@ videodialog = NodePath("../../videodialog")
 icondialog = NodePath("../../icondialog")
 paknamedialog = NodePath("../../../Panel3/LineEdit")
 pakinfodialog = NodePath("../../../Panel/TextEdit")
+root = NodePath("../../../../..")
+
+[node name="import" type="Button" parent="TabContainer/PakInfo/Panel2"]
+layout_mode = 2
+offset_left = 12.0
+offset_top = 311.0
+offset_right = 402.0
+offset_bottom = 342.0
+tooltip_text = "the music the pak will use, this field is required"
+text = "import minapak"
+
+[node name="FileDialog" type="FileDialog" parent="TabContainer/PakInfo/Panel2"]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 2
+size = Vector2i(322, 180)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.minapak")
+use_native_dialog = true
 
 [node name="BeatMap" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
+script = ExtResource("4_uns8v")
 metadata/_tab_index = 1
 
-[node name="Button" type="Button" parent="." node_paths=PackedStringArray("tabcontroler", "colorrect", "iconfiledialog", "videofiledialog", "previewfiledialog", "musicfiledialog", "pakinfobox", "paknamebox", "reqpopup", "confirmpopup")]
+[node name="Panel" type="Panel" parent="TabContainer/BeatMap"]
+layout_mode = 0
+offset_left = -144.0
+offset_top = 32.0
+offset_right = 48.0
+offset_bottom = 617.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ateff")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/BeatMap/Panel"]
+layout_mode = 0
+offset_right = 192.0
+offset_bottom = 585.0
+
+[node name="CheckButton" type="CheckButton" parent="TabContainer/BeatMap/Panel/VBoxContainer"]
+layout_mode = 2
+button_group = SubResource("ButtonGroup_a135k")
+text = "Map mode"
+
+[node name="CheckButton2" type="CheckButton" parent="TabContainer/BeatMap/Panel/VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+button_group = SubResource("ButtonGroup_a135k")
+text = "RGM"
+
+[node name="Area2D" type="Area2D" parent="TabContainer/BeatMap/Panel"]
+collision_layer = 2
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TabContainer/BeatMap/Panel/Area2D"]
+position = Vector2(109, 285)
+shape = SubResource("RectangleShape2D_qjno7")
+
+[node name="ColorRect" type="ColorRect" parent="TabContainer/BeatMap"]
+layout_mode = 0
+offset_left = 257.0
+offset_top = 38.0
+offset_right = 401.0
+offset_bottom = 608.0
+color = Color(0.180005, 0.180005, 0.180005, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="TabContainer/BeatMap"]
+layout_mode = 0
+offset_left = 409.0
+offset_top = 38.0
+offset_right = 553.0
+offset_bottom = 608.0
+color = Color(0.180005, 0.180005, 0.180005, 1)
+
+[node name="ColorRect3" type="ColorRect" parent="TabContainer/BeatMap"]
+layout_mode = 0
+offset_left = 561.0
+offset_top = 38.0
+offset_right = 705.0
+offset_bottom = 608.0
+color = Color(0.180005, 0.180005, 0.180005, 1)
+
+[node name="ColorRect4" type="ColorRect" parent="TabContainer/BeatMap"]
+layout_mode = 0
+offset_left = 713.0
+offset_top = 38.0
+offset_right = 857.0
+offset_bottom = 608.0
+color = Color(0.180005, 0.180005, 0.180005, 1)
+
+[node name="Button" type="Button" parent="." node_paths=PackedStringArray("tabcontroler", "colorrect", "iconfiledialog", "videofiledialog", "previewfiledialog", "musicfiledialog", "pakinfobox", "paknamebox", "reqpopup", "confirmpopup", "root")]
 offset_left = 653.0
 offset_right = 1152.0
 offset_bottom = 63.0
@@ -214,6 +325,7 @@ pakinfobox = NodePath("../TabContainer/PakInfo/Panel/TextEdit")
 paknamebox = NodePath("../TabContainer/PakInfo/Panel3/LineEdit")
 reqpopup = NodePath("../Control")
 confirmpopup = NodePath("../ConfirmationDialog")
+root = NodePath("..")
 
 [node name="ColorRect2" type="ColorRect" parent="."]
 visible = false
@@ -223,8 +335,35 @@ offset_right = 2441.0
 offset_bottom = 1208.0
 color = Color(0, 0, 0, 1)
 
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-9.5, -9.5)
+shape = SubResource("RectangleShape2D_1nle0")
+
+[node name="ContextMenu" type="PopupMenu" parent="."]
+size = Vector2i(110, 100)
+item_count = 2
+item_0/text = "Add Note"
+item_0/id = 0
+item_1/text = "Add Trigger"
+item_1/id = 1
+
+[connection signal="file_selected" from="TabContainer/PakInfo/Panel2/musicdialog" to="." method="_on_musicdialog_file_selected"]
+[connection signal="file_selected" from="TabContainer/PakInfo/Panel2/previewdialog" to="." method="_on_previewdialog_file_selected"]
+[connection signal="file_selected" from="TabContainer/PakInfo/Panel2/videodialog" to="." method="_on_videodialog_file_selected"]
+[connection signal="file_selected" from="TabContainer/PakInfo/Panel2/icondialog" to="." method="_on_icondialog_file_selected"]
 [connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/iconsel" to="TabContainer/PakInfo/Panel2/VBoxContainer/iconsel" method="_on_pressed"]
 [connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/videosel" to="TabContainer/PakInfo/Panel2/VBoxContainer/videosel" method="_on_pressed"]
 [connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/previewsel" to="TabContainer/PakInfo/Panel2/VBoxContainer/previewsel" method="_on_pressed"]
 [connection signal="pressed" from="TabContainer/PakInfo/Panel2/VBoxContainer/musicsel" to="TabContainer/PakInfo/Panel2/VBoxContainer/musicsel" method="_on_pressed"]
+[connection signal="pressed" from="TabContainer/PakInfo/Panel2/import" to="." method="_on_musicsel_pressed"]
+[connection signal="file_selected" from="TabContainer/PakInfo/Panel2/FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="mouse_entered" from="TabContainer/BeatMap/Panel" to="TabContainer/BeatMap" method="_on_panel_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/BeatMap/Panel" to="TabContainer/BeatMap" method="_on_panel_mouse_exited"]
+[connection signal="area_entered" from="TabContainer/BeatMap/Panel/Area2D" to="TabContainer/BeatMap" method="_on_area_2d_area_entered"]
+[connection signal="area_exited" from="TabContainer/BeatMap/Panel/Area2D" to="TabContainer/BeatMap" method="_on_area_2d_area_exited"]
 [connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
+[connection signal="id_pressed" from="ContextMenu" to="." method="_on_context_menu_id_pressed"]

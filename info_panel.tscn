@@ -1,0 +1,66 @@
+[gd_scene load_steps=6 format=3 uid="uid://cixthvy7k4my6"]
+
+[ext_resource type="Texture2D" uid="uid://cl5mr5h7uj2o4" path="res://minapak.svg" id="1_jofcc"]
+[ext_resource type="Script" path="res://info_panel.gd" id="1_yicqx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vanxk"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="LabelSettings" id="LabelSettings_ynvya"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_pfmj3"]
+font_color = Color(0.69, 0.69, 0.69, 1)
+
+[node name="Control" type="Control" node_paths=PackedStringArray("_icon", "_title", "_desc")]
+layout_mode = 3
+anchor_right = 0.005
+offset_right = 460.24
+offset_bottom = 179.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yicqx")
+_icon = NodePath("Panel/icon")
+_title = NodePath("Panel/title")
+_desc = NodePath("Panel/desc")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 466.0
+offset_bottom = 179.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_vanxk")
+
+[node name="icon" type="TextureRect" parent="Panel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 142.0
+offset_bottom = 142.0
+texture = ExtResource("1_jofcc")
+expand_mode = 1
+
+[node name="title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 6.0
+offset_right = 466.0
+offset_bottom = 55.0
+text = "Rick-astley never gonna give you up "
+label_settings = SubResource("LabelSettings_ynvya")
+vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 3
+
+[node name="desc" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 55.0
+offset_right = 466.0
+offset_bottom = 156.0
+text = "Rick-astley never gonna give you up "
+label_settings = SubResource("LabelSettings_pfmj3")
+autowrap_mode = 3
+text_overrun_behavior = 3

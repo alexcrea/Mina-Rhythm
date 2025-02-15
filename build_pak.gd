@@ -10,6 +10,7 @@ extends Button
 @export var paknamebox: Node
 @export var reqpopup: Node
 @export var confirmpopup: Node
+@export var root: Node
 
 var pak_filename
 var files_to_package = []
@@ -23,37 +24,34 @@ func _on_pressed() -> void:
 	if paknamebox.text == "":
 		reqpopup.visible = true
 		reqpopup.dialog_text += " PakName"
-	if musicfiledialog.current_file == "":
+		print(root.selected_files)
+		return
+	if root.selected_files[3] == "":
 		reqpopup.visible = true
 		reqpopup.dialog_text += " Song"
-	if paknamebox.text == "" or musicfiledialog.current_file == "":
+		print(root.selected_files)
 		return
-	busy_screen()
-	var generated_info_file = FileAccess.open("res://temp/generated_info_file.txt", FileAccess.WRITE)
-	generated_info_file.store_string(pakinfobox.text)
-	generated_info_file.close()
-	
 	var generated_pak_config:String = str(
 		"[PackInfo]\n",
 		"pack_config=generated_pak_file.ini\n",
 		"pack_name=", paknamebox.text, "\n",
-		"icon=", iconfiledialog.current_file.replace("\\", "/").split("/")[iconfiledialog.current_file.replace("\\", "/").split("/").size() - 1], "\n",
+		"icon=", root.selected_files[0], "\n",
 		"[Resources]\n",
-		"song=", musicfiledialog.current_file.replace("\\", "/").split("/")[musicfiledialog.current_file.replace("\\", "/").split("/").size() - 1], "\n",
-		"video=", videofiledialog.current_file.replace("\\", "/").split("/")[videofiledialog.current_file.replace("\\", "/").split("/").size() - 1], "\n",
-		"preview_img=", previewfiledialog.current_file.replace("\\", "/").split("/")[previewfiledialog.current_file.replace("\\", "/").split("/").size() - 1], "\n",
+		"song=", root.selected_files[3], "\n",
+		"video=", root.selected_files[1], "\n",
+		"preview_img=", root.selected_files[2],"\n",
 		"beat_map=","\n",
 		"info=generated_info_file.txt\n"
 	)
-	
 	# Store the config in a temporary file
 	var generated_pak_file = FileAccess.open("res://temp/generated_pak_file.ini", FileAccess.WRITE)
 	generated_pak_file.store_string(generated_pak_config)
 	generated_pak_file.close()
-	
-	await pack_pak()
+	busy_screen()
+	pack_pak()
 	reset_busy_screen()
 	DirAccess.remove_absolute("res://temp")
+	DirAccess.make_dir_absolute("res://temp")
 
 func pack_pak() -> void:
 	# Define a dictionary to map prefixes to their actions
@@ -91,7 +89,7 @@ func pack_pak() -> void:
 					pack_name = line.replace(prefix, "").strip_edges()
 				else:
 					var file_path = line.replace(prefix, "").strip_edges().replace("\\", "/")
-					files_to_package.append(file_path)
+					files_to_package.append(str("res://temp/",file_path))
 					
 				processed = true
 				break

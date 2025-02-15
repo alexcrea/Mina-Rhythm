@@ -1,6 +1,7 @@
 extends Control
 
 @export var button_scene:= preload("res://song_button.tscn")  # Exported variable to assign the button scene
+@export var info_scene:= preload("res://info_panel.tscn")
 
 #TODO 
 # add name append from pak config for append song
@@ -10,13 +11,14 @@ var songs : Array = []  # Array to store song information
 var selected_index : int = -1  # Index of the currently selected song
 var buttons : Array[Node]
 var _trans_to_play = false
-var _seperation_factor = 82
+var _seperation_factor = 100
 var _x_factor = -50
 signal button_slide_finished
 signal button_slide_start(path_to_song)
 signal add_songs_pressed
 @export var scroll_container : ScrollContainer
 var audioplayer:AudioStreamPlayer
+var curr_info_box:Node
 
 func _ready():
 	init_new_audioplayer()
@@ -32,6 +34,9 @@ func populate_song_list():
 		var song_name = songs[i]
 		var button = button_scene.instantiate()  # Create a new button instance
 		button.label.text = song_name  # Set the button text to the song name
+		button.label.label_settings = button.label.label_settings.duplicate()
+		button.label.label_settings.font_size = 21 * pow(24.0 / button.label.text.length(), 0.1)#max( 16, 21 * (24.0 / button.label.text.length()) )
+		print(button.label.label_settings.font_size)
 		button.id = i
 		button.audioplayer = audioplayer
 		button.connect("pressed", Callable(self, "_on_button_pressed"))
@@ -107,6 +112,19 @@ func apply_selected_effect(button,start_or_end):
 func scroll_to_selected(button):
 	# Ensure the button is visible
 	scroll_container.ensure_control_visible(button)
+	var info_box = info_scene.instantiate()
+	info_box.title = songs[button.id]
+	info_box.desc = Global.pak_reader.get_pak_desc(song_paths[button.id])
+	info_box.icon = load(str(song_paths[button.id],"/",Global.pak_reader.get_pak_icon(song_paths[button.id],true)))
+	info_box.position.x = 1000
+	info_box.position.y = 440
+	if(curr_info_box):
+		curr_info_box.queue_free()
+	curr_info_box = info_box
+	get_parent().get_parent().add_child.call_deferred(info_box)
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.tween_property(info_box, "position:x", 670, 0.3).set_ease(Tween.EASE_OUT)
 
 func _process(_delta: float) -> void:
 	if !_trans_to_play:
