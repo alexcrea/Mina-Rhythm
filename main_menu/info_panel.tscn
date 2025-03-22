@@ -1,0 +1,109 @@
+[gd_scene load_steps=9 format=3 uid="uid://cixthvy7k4my6"]
+
+[ext_resource type="Texture2D" uid="uid://b12mswtlnuaat" path="res://resources/minapak.svg" id="1_jofcc"]
+[ext_resource type="Script" path="res://main_menu/info_panel.gd" id="1_yicqx"]
+[ext_resource type="FontFile" uid="uid://brb0fwgeqxoch" path="res://resources/Vividly-extended-Regular.ttf" id="2_8gdu2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vanxk"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="LabelSettings" id="LabelSettings_im432"]
+font = ExtResource("2_8gdu2")
+font_size = 25
+font_color = Color(0.69, 0.69, 0.69, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ynvya"]
+font = ExtResource("2_8gdu2")
+font_size = 25
+
+[sub_resource type="LabelSettings" id="LabelSettings_pfmj3"]
+font = ExtResource("2_8gdu2")
+font_size = 25
+font_color = Color(0.69, 0.69, 0.69, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7rsuv"]
+font = ExtResource("2_8gdu2")
+font_size = 25
+font_color = Color(0.486173, 0.486173, 0.486173, 1)
+
+[node name="Control" type="Control" node_paths=PackedStringArray("_icon", "_title", "_desc", "_song", "_pak")]
+layout_mode = 3
+anchor_left = 0.405
+anchor_right = 0.405
+offset_left = -466.56
+offset_right = -0.560028
+offset_bottom = 179.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yicqx")
+_icon = NodePath("Panel/icon")
+_title = NodePath("Panel/title")
+_desc = NodePath("Panel/desc")
+_song = NodePath("Panel/song_credit")
+_pak = NodePath("Panel/pak_credit")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -466.0
+offset_bottom = 179.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_vanxk")
+
+[node name="song_credit" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 119.0
+offset_right = 466.0
+offset_bottom = 142.0
+text = "Rick-astley never gonna give you up"
+label_settings = SubResource("LabelSettings_im432")
+text_overrun_behavior = 3
+
+[node name="icon" type="TextureRect" parent="Panel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 118.0
+offset_bottom = 118.0
+texture = ExtResource("1_jofcc")
+expand_mode = 1
+
+[node name="title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 124.0
+offset_top = 6.0
+offset_right = 466.0
+offset_bottom = 55.0
+text = "Rick-astley never gonna give you up "
+label_settings = SubResource("LabelSettings_ynvya")
+vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 3
+
+[node name="desc" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 124.0
+offset_top = 55.0
+offset_right = 466.0
+offset_bottom = 119.0
+text = "Rick-astley never gonna give you up "
+label_settings = SubResource("LabelSettings_pfmj3")
+autowrap_mode = 3
+text_overrun_behavior = 3
+
+[node name="pak_credit" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 142.0
+offset_right = 466.0
+offset_bottom = 165.0
+text = "Rick-astley never gonna give you up"
+label_settings = SubResource("LabelSettings_7rsuv")
+text_overrun_behavior = 3

@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3 uid="uid://bg3twwekbie4r"]
+
+[ext_resource type="Script" path="res://main_menu/song_button.gd" id="1_ii6sj"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b2exo"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ekass"]
+
+[sub_resource type="Theme" id="Theme_qfrjs"]
+Button/styles/focus = SubResource("StyleBoxEmpty_ekass")
+
+[sub_resource type="LabelSettings" id="LabelSettings_o5vkj"]
+font_size = 25
+
+[node name="Control" type="Control" node_paths=PackedStringArray("internal_button", "label")]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -48.0
+offset_right = 265.0
+offset_bottom = 96.175
+script = ExtResource("1_ii6sj")
+internal_button = NodePath("PanelContainer/Button")
+label = NodePath("Label")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = -44.0
+offset_right = 313.0
+offset_bottom = 92.28
+theme_override_styles/panel = SubResource("StyleBoxFlat_b2exo")
+
+[node name="Button" type="Button" parent="PanelContainer"]
+layout_mode = 2
+theme = SubResource("Theme_qfrjs")
+action_mode = 0
+flat = true
+clip_text = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_left = 56.02
+offset_top = 16.0
+offset_right = 310.02
+offset_bottom = 74.9
+label_settings = SubResource("LabelSettings_o5vkj")
+vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 3
+
+[connection signal="focus_entered" from="PanelContainer/Button" to="." method="_on_button_focus_entered"]
+[connection signal="mouse_entered" from="PanelContainer/Button" to="." method="_on_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/Button" to="." method="_on_button_pressed"]

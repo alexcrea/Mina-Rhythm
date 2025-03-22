@@ -1,0 +1,170 @@
+[gd_scene load_steps=6 format=3 uid="uid://c2cvll7ctu25a"]
+
+[ext_resource type="Script" path="res://main_menu/menu.gd" id="1_ufmj0"]
+[ext_resource type="Script" path="res://main_menu/buttons.gd" id="2_4y3y1"]
+[ext_resource type="Texture2D" uid="uid://c22gq1expir0n" path="res://resources/editor.svg" id="2_lfsci"]
+[ext_resource type="Texture2D" uid="uid://ds1xqe54sk5pa" path="res://resources/settings2.svg" id="3_b0c7s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4clx"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="CanvasLayer" type="CanvasLayer"]
+follow_viewport_enabled = true
+script = ExtResource("1_ufmj0")
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+self_modulate = Color(0.55, 0.55, 0.55, 0.266667)
+z_index = -3
+offset_right = 1153.0
+offset_bottom = 648.0
+mouse_filter = 2
+volume_db = -80.0
+expand = true
+loop = true
+buffering_msec = 1000
+
+[node name="ColorRect3" type="ColorRect" parent="."]
+z_index = -4
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.1209, 0.127877, 0.13, 1)
+
+[node name="Panel" type="Panel" parent="."]
+offset_right = 1152.0
+offset_bottom = 42.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_y4clx")
+
+[node name="Button" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 40.0
+offset_bottom = 36.0
+disabled = true
+icon = ExtResource("2_lfsci")
+
+[node name="Control" type="Control" parent="Panel/Button"]
+clip_contents = true
+anchors_preset = 0
+offset_left = 36.0
+offset_right = 380.0
+offset_bottom = 32.0
+
+[node name="Label" type="Label" parent="Panel/Button/Control"]
+layout_mode = 0
+offset_left = -325.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 32.0
+text = "editor (still very very under contstruction)"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Control2" type="Control" parent="Panel/Button"]
+clip_contents = true
+anchors_preset = 0
+offset_left = 32.0
+offset_right = 36.0
+offset_bottom = 32.0
+
+[node name="ColorRect" type="ColorRect" parent="Panel/Button/Control2"]
+layout_mode = 0
+offset_left = -20.0
+offset_top = 3.0
+offset_right = -18.0
+offset_bottom = 30.0
+
+[node name="Button2" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 1074.0
+offset_top = 4.0
+offset_right = 1106.0
+offset_bottom = 36.0
+icon = ExtResource("3_b0c7s")
+
+[node name="Control" type="Control" parent="Panel/Button2"]
+clip_contents = true
+anchors_preset = 0
+offset_left = -70.0
+offset_right = -5.0
+offset_bottom = 32.0
+
+[node name="Label" type="Label" parent="Panel/Button2/Control"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 3.0
+offset_right = 131.0
+offset_bottom = 32.0
+text = "settings"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Control2" type="Control" parent="Panel/Button2"]
+clip_contents = true
+anchors_preset = 0
+offset_left = -5.0
+offset_right = -1.0
+offset_bottom = 32.0
+
+[node name="ColorRect" type="ColorRect" parent="Panel/Button2/Control2"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 3.0
+offset_right = 32.0
+offset_bottom = 30.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_top = 86.0
+offset_right = 1153.0
+offset_bottom = 86.0
+
+[node name="Control" type="Control" parent="ScrollContainer" node_paths=PackedStringArray("scroll_container")]
+layout_mode = 2
+script = ExtResource("2_4y3y1")
+scroll_container = NodePath("..")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open File(s)"
+initial_position = 2
+size = Vector2i(350, 180)
+always_on_top = true
+popup_window = true
+force_native = true
+ok_button_text = "Open"
+file_mode = 1
+access = 2
+filters = PackedStringArray("*.minapak")
+use_native_dialog = true
+
+[node name="AcceptDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+title = "Import status"
+initial_position = 2
+size = Vector2i(367, 100)
+unresizable = true
+always_on_top = true
+popup_window = true
+dialog_text = "Something went very Very wrong...."
+dialog_autowrap = true
+
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+top_level = true
+z_index = 6
+offset_left = 1152.0
+offset_top = -399.0
+offset_right = 3593.0
+offset_bottom = 1208.0
+color = Color(0, 0, 0, 1)
+
+[connection signal="import" from="." to="ScrollContainer/Control" method="_on_import"]
+[connection signal="mouse_entered" from="Panel/Button" to="." method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Panel/Button" to="." method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Panel/Button2" to="." method="_on_button_2_mouse_entered"]
+[connection signal="mouse_exited" from="Panel/Button2" to="." method="_on_button_2_mouse_exited"]
+[connection signal="pressed" from="Panel/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="add_songs_pressed" from="ScrollContainer/Control" to="." method="_on_control_add_songs_pressed"]
+[connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]

@@ -5,6 +5,8 @@
 .import/
 export.cfg
 export_presets.cfg
+*.tmp
+tempa
 
 # Imported translations (automatically generated from CSV files)
 *.translation
