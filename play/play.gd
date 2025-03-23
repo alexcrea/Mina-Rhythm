@@ -144,7 +144,7 @@ func _process(delta: float) -> void:
 				if note.get_meta("type") == "hold":
 					if !note.has_meta("autodone"):
 						var start_time = note.get_meta("start_time")
-						if current_time < note.get_meta("end_time") and current_time >= start_time + 150:
+						if current_time < note.get_meta("end_time") and current_time >= start_time:
 							if not note.has_meta("autoflag"):
 								if (prev_y + note.size.y >= hit_line) or (note.position.y + note.size.y >= hit_line):
 									score += score_multipliers[0]
@@ -157,7 +157,7 @@ func _process(delta: float) -> void:
 							var remaining = note.get_meta("end_time") - current_time
 							var new_height = remaining * scroll_speed
 							var max_height = hit_line - note.position.y
-							note.size.y = min(new_height, max_height) + 65
+							note.size.y = max_height
 						if note.has_meta("autoflag") and not note.has_meta("autodone") and (prev_y >= hit_line or note.position.y >= hit_line):
 							score += score_multipliers[0]
 							note.size.y = 0
