@@ -271,7 +271,8 @@ func init_new_audioplayer():
 		audioplayer = null
 	audioplayer = AudioStreamPlayer.new()
 	audioplayer.name = "MusicPlayer"
-	audioplayer.volume_db = Global.Settings["music_volume"]
+	audioplayer.bus = "Music"
+	audioplayer.volume_db = -12
 	add_child(audioplayer)
 
 

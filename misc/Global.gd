@@ -5,8 +5,10 @@ var pak_reader = preload("res://misc/pak_reader.gd").new()
 # Singleton reference to IRLS System
 var IRLS = preload("res://misc/IRLS.gd").new()
 
-var Settings = {"music_volume":-12,"target_fps":0,"vsync":DisplayServer.VSyncMode.VSYNC_DISABLED,"show_fps":true}
-var default_settings = {"music_volume":-12,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false}
+var settings_file = "user://user_data/settings.json"
+
+var Settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":0,"vsync":DisplayServer.VSyncMode.VSYNC_DISABLED,"show_fps":true}
+var default_settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false}
 
 var fps_counter
 func _ready():
@@ -30,6 +32,16 @@ func _ready():
 	get_tree().root.add_child.call_deferred(ui_layer,true)
 	ui_layer.add_child(fps_count)
 	DisplayServer.window_set_title(str(get_window().title.trim_suffix("(DEBUG)")," ",ProjectSettings.get_setting("application/config/version")))
+	
+	if !DirAccess.dir_exists_absolute("user://user_data"):
+		DirAccess.make_dir_absolute("user://user_data")
+	
+	var temp_settings = load_json_dict(settings_file)
+	if !temp_settings.is_empty():
+		Settings = temp_settings
+	else:
+		save_json_dict(settings_file,default_settings)
+		Settings = default_settings
 
 func clear_temp():
 	if DirAccess.dir_exists_absolute("user://temp"):
@@ -57,5 +69,30 @@ func _process(_delta: float) -> void:
 
 		var current_fps = roundi(Engine.get_frames_per_second())
 		if current_fps != last_fps:
-			fps_counter.text = str(current_fps)
+			fps_counter.text = str(current_fps)+" FPS"
 			last_fps = current_fps
+
+func load_json_dict(path: String) -> Dictionary:
+	var file = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("Failed to open file: " + path)
+		return {}
+
+	var text = file.get_as_text()
+	var result = JSON.parse_string(text)
+	if result is Dictionary:
+		return result
+	else:
+		push_error("JSON file does not contain a dictionary: " + path)
+		return {}
+
+func save_json_dict(path: String, data: Dictionary) -> void:
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to open file for writing: " + path)
+		return
+
+	var json_text = JSON.stringify(data, "\t")
+	file.store_string(json_text)
+	file.flush()
+	file.close()

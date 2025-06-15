@@ -79,12 +79,13 @@ func _on_button_mouse_exited() -> void:
 	tween.tween_property($Panel/Button/Control/Label,"position:x",-325,0.4).set_ease(Tween.EASE_IN_OUT)
 
 func _on_button_2_pressed() -> void:
-	$ColorRect.visible = true
+	$Panel/Button2.disabled = true
+	$SettingsPanel.show()
 	var tween = create_tween()
 	tween.set_trans(Tween.TRANS_QUINT)
-	tween.tween_property($ColorRect,"position:x",0,1).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property($SettingsPanel,"position:x",867,0.5).set_ease(Tween.EASE_OUT)
 	await tween.finished
-	get_tree().change_scene_to_file("res://settings/settings.tscn")
+	$SettingsPanel/Exit.disabled = false
 
 func _on_button_2_mouse_entered() -> void:
 	var tween = create_tween()

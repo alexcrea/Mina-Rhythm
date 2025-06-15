@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Mina-Rhythm"
-config/version="alpha 1.1.1"
+config/version="beta 1.6"
 config/tags=PackedStringArray("game", "mina_rhythm")
 run/main_scene="res://main_menu/menu.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
@@ -25,13 +25,17 @@ config/icon="res://resources/minapak.svg"
 
 Global="*res://misc/Global.gd"
 http_client="*res://network/http_client.gd"
+ControllerIcons="*res://addons/controller_icons/ControllerIcons.gd"
 
 [display]
 
-window/size/always_on_top=true
 window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
 window/vsync/vsync_mode=0
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/controller_icons/plugin.cfg")
 
 [input]
 

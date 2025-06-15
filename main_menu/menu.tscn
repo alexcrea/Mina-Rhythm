@@ -1,14 +1,31 @@
-[gd_scene load_steps=6 format=3 uid="uid://c2cvll7ctu25a"]
+[gd_scene load_steps=10 format=3 uid="uid://c2cvll7ctu25a"]
 
 [ext_resource type="Script" path="res://main_menu/menu.gd" id="1_ufmj0"]
 [ext_resource type="Script" path="res://main_menu/buttons.gd" id="2_4y3y1"]
 [ext_resource type="Texture2D" uid="uid://c22gq1expir0n" path="res://resources/editor.svg" id="2_lfsci"]
 [ext_resource type="Texture2D" uid="uid://ds1xqe54sk5pa" path="res://resources/settings2.svg" id="3_b0c7s"]
+[ext_resource type="Script" path="res://main_menu/settings_panel.gd" id="5_1ccvm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4clx"]
 bg_color = Color(0.151276, 0.151276, 0.151276, 1)
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pbiia"]
+bg_color = Color(0.152941, 0.152941, 0.152941, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_bottom = 3
+border_color = Color(0.577008, 0.577008, 0.577008, 0.0980392)
+border_blend = true
+corner_radius_top_left = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="LabelSettings" id="LabelSettings_q27qt"]
+font_size = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_o4346"]
+font_size = 13
 
 [node name="CanvasLayer" type="CanvasLayer"]
 follow_viewport_enabled = true
@@ -39,9 +56,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_y4clx")
 [node name="Button" type="Button" parent="Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 4.0
+offset_top = 5.0
 offset_right = 40.0
-offset_bottom = 36.0
+offset_bottom = 37.0
 disabled = true
 icon = ExtResource("2_lfsci")
 
@@ -78,10 +95,10 @@ offset_bottom = 30.0
 
 [node name="Button2" type="Button" parent="Panel"]
 layout_mode = 0
-offset_left = 1074.0
-offset_top = 4.0
-offset_right = 1106.0
-offset_bottom = 36.0
+offset_left = 992.0
+offset_top = 5.0
+offset_right = 1024.0
+offset_bottom = 37.0
 icon = ExtResource("3_b0c7s")
 
 [node name="Control" type="Control" parent="Panel/Button2"]
@@ -159,6 +176,156 @@ offset_right = 3593.0
 offset_bottom = 1208.0
 color = Color(0, 0, 0, 1)
 
+[node name="SettingsPanel" type="Panel" parent="."]
+visible = false
+top_level = true
+z_index = 2
+offset_left = 1152.0
+offset_right = 1437.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pbiia")
+script = ExtResource("5_1ccvm")
+
+[node name="Exit" type="Button" parent="SettingsPanel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 8.0
+offset_right = 45.0
+offset_bottom = 40.0
+text = ">"
+
+[node name="Control" type="Control" parent="SettingsPanel/Exit"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 36.0
+offset_right = 380.0
+offset_bottom = 32.0
+
+[node name="Label" type="Label" parent="SettingsPanel/Exit/Control"]
+layout_mode = 0
+offset_left = -325.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 32.0
+text = "Close"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Control2" type="Control" parent="SettingsPanel/Exit"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 32.0
+offset_right = 36.0
+offset_bottom = 32.0
+
+[node name="ColorRect" type="ColorRect" parent="SettingsPanel/Exit/Control2"]
+layout_mode = 0
+offset_left = -20.0
+offset_top = 3.0
+offset_right = -18.0
+offset_bottom = 30.0
+
+[node name="Volume" type="Label" parent="SettingsPanel"]
+layout_mode = 0
+offset_left = 97.0
+offset_top = 36.0
+offset_right = 200.0
+offset_bottom = 64.0
+text = "Volume"
+label_settings = SubResource("LabelSettings_q27qt")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Master" type="HSlider" parent="SettingsPanel/Volume"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 41.0
+offset_right = 171.0
+offset_bottom = 57.0
+rounded = true
+metadata/id = 0
+
+[node name="Label" type="Label" parent="SettingsPanel/Volume/Master"]
+layout_mode = 0
+offset_left = -95.0
+offset_top = -4.0
+offset_right = -7.0
+offset_bottom = 19.0
+text = "Master"
+label_settings = SubResource("LabelSettings_o4346")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="SettingsPanel/Volume/Master"]
+offset_left = 44.0
+offset_top = 19.0
+offset_right = 132.0
+offset_bottom = 42.0
+text = "PERCENT"
+label_settings = SubResource("LabelSettings_o4346")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Music" type="HSlider" parent="SettingsPanel/Volume"]
+offset_left = 7.0
+offset_top = 89.0
+offset_right = 171.0
+offset_bottom = 105.0
+rounded = true
+metadata/id = 1
+
+[node name="Label" type="Label" parent="SettingsPanel/Volume/Music"]
+layout_mode = 0
+offset_left = -95.0
+offset_top = -4.0
+offset_right = -7.0
+offset_bottom = 19.0
+text = "Music"
+label_settings = SubResource("LabelSettings_o4346")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="SettingsPanel/Volume/Music"]
+offset_left = 44.0
+offset_top = 19.0
+offset_right = 132.0
+offset_bottom = 42.0
+text = "PERCENT"
+label_settings = SubResource("LabelSettings_o4346")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Effects" type="HSlider" parent="SettingsPanel/Volume"]
+offset_left = 7.0
+offset_top = 137.0
+offset_right = 171.0
+offset_bottom = 153.0
+rounded = true
+metadata/id = 2
+
+[node name="Label" type="Label" parent="SettingsPanel/Volume/Effects"]
+layout_mode = 0
+offset_left = -95.0
+offset_top = -4.0
+offset_right = -7.0
+offset_bottom = 19.0
+text = "Effects"
+label_settings = SubResource("LabelSettings_o4346")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="SettingsPanel/Volume/Effects"]
+offset_left = 44.0
+offset_top = 19.0
+offset_right = 132.0
+offset_bottom = 42.0
+text = "PERCENT"
+label_settings = SubResource("LabelSettings_o4346")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="import" from="." to="ScrollContainer/Control" method="_on_import"]
 [connection signal="mouse_entered" from="Panel/Button" to="." method="_on_button_mouse_entered"]
 [connection signal="mouse_exited" from="Panel/Button" to="." method="_on_button_mouse_exited"]
@@ -168,3 +335,9 @@ color = Color(0, 0, 0, 1)
 [connection signal="pressed" from="Panel/Button2" to="." method="_on_button_2_pressed"]
 [connection signal="add_songs_pressed" from="ScrollContainer/Control" to="." method="_on_control_add_songs_pressed"]
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
+[connection signal="mouse_entered" from="SettingsPanel/Exit" to="SettingsPanel" method="_on_exit_mouse_entered"]
+[connection signal="mouse_exited" from="SettingsPanel/Exit" to="SettingsPanel" method="_on_exit_mouse_exited"]
+[connection signal="pressed" from="SettingsPanel/Exit" to="SettingsPanel" method="_on_exit_pressed"]
+[connection signal="value_changed" from="SettingsPanel/Volume/Master" to="SettingsPanel" method="_on_VolumeSlider_value_changed" binds= [0]]
+[connection signal="value_changed" from="SettingsPanel/Volume/Music" to="SettingsPanel" method="_on_VolumeSlider_value_changed" binds= [1]]
+[connection signal="value_changed" from="SettingsPanel/Volume/Effects" to="SettingsPanel" method="_on_VolumeSlider_value_changed" binds= [2]]
