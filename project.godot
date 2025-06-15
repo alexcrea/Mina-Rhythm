@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Mina-Rhythm"
-config/version="beta 1.6"
+config/version="beta 1.6s"
 config/tags=PackedStringArray("game", "mina_rhythm")
 run/main_scene="res://main_menu/menu.tscn"
 config/features=PackedStringArray("4.3", "Mobile")

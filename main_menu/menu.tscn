@@ -259,6 +259,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Value" type="Label" parent="SettingsPanel/Volume/Master"]
+layout_mode = 0
 offset_left = 44.0
 offset_top = 19.0
 offset_right = 132.0
@@ -269,6 +270,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Music" type="HSlider" parent="SettingsPanel/Volume"]
+layout_mode = 0
 offset_left = 7.0
 offset_top = 89.0
 offset_right = 171.0
@@ -288,6 +290,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Value" type="Label" parent="SettingsPanel/Volume/Music"]
+layout_mode = 0
 offset_left = 44.0
 offset_top = 19.0
 offset_right = 132.0
@@ -298,6 +301,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Effects" type="HSlider" parent="SettingsPanel/Volume"]
+layout_mode = 0
 offset_left = 7.0
 offset_top = 137.0
 offset_right = 171.0
@@ -317,6 +321,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Value" type="Label" parent="SettingsPanel/Volume/Effects"]
+layout_mode = 0
 offset_left = 44.0
 offset_top = 19.0
 offset_right = 132.0

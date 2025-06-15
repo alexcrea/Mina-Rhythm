@@ -1,5 +1,8 @@
 extends Button
 
+var pak_filename
+var files_to_package = []
+
 @export var tabcontroler: Node
 @export var colorrect: Node
 @export var iconfiledialog: Node
@@ -11,9 +14,6 @@ extends Button
 @export var reqpopup: Node
 @export var confirmpopup: Node
 @export var root: Node
-
-var pak_filename
-var files_to_package = []
 
 func _ready() -> void:
 	confirmpopup.connect("canceled", Callable(self, "_canceled"))
