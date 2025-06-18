@@ -1,10 +1,24 @@
 extends Panel
 
 func _ready() -> void:
-	#Theres a better way to do this, I'm just lazy
-	$Volume/Master.value = db_to_linear(Global.Settings.get("master_volume",0))*100
-	$Volume/Music.value = db_to_linear(Global.Settings.get("music_volume",0))*100
-	$Volume/Effects.value = db_to_linear(Global.Settings.get("effects_volume",0))*100
+	var volume_keys = ["master_volume", "music_volume", "effects_volume"]
+	var volume_nodes = [$Volume/Master, $Volume/Music, $Volume/Effects]
+
+	for i in volume_keys.size():
+		var key = volume_keys[i]
+		var node = volume_nodes[i]
+		var db_val = Global.Settings.get(key, 0)
+		
+		var linear_val: float
+		if db_val == -INF:
+			linear_val = 0
+		else:
+			if typeof(db_val) == TYPE_FLOAT and (is_nan(db_val) or db_val == INF):
+				db_val = 0
+			linear_val = db_to_linear(db_val) * 100.0
+
+		node.value = linear_val
+		_on_VolumeSlider_value_changed(linear_val, i)
 
 func _on_VolumeSlider_value_changed(value: float,VolSlider):
 	VolSlider = $Volume.get_child(VolSlider)

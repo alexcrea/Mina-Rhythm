@@ -8,13 +8,16 @@ var id
 
 func _ready() -> void:
 	if id == 0:
-		internal_button.grab_focus()
+		_on_button_pressed()
+
+func get_id() -> int:
+	return id
 
 func _on_button_pressed() -> void:
 	emit_signal("pressed",id)
 
-func _on_button_focus_entered() -> void:
-	emit_signal("pressed",id)
+#func _on_button_focus_entered() -> void:
+	#emit_signal("pressed",id)
 
-func _on_button_mouse_entered() -> void:
-	internal_button.grab_focus()
+#func _on_button_mouse_entered() -> void:
+	#internal_button.grab_focus()

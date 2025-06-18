@@ -115,17 +115,22 @@ func _ready() -> void:
 		score_text.text = str("Score: ",score," (",get_current_rating(),")")
 		$TextureRect.visible = Global.pak_reader.find_in_config(song_path,true,"bottom_fade") == "true" if true else false
 		var music_path = str(song_path, "/", Global.pak_reader.find_in_config(song_path,true,"song"))
-		var stream = AudioStreamOggVorbis.load_from_file(music_path)
+		
+		var loader := AudioLoader.new()
+		var stream = loader.loadfile(music_path)
 		if stream:
 			$AudioStreamPlayer.stream = stream
 		else:
 			push_error("Failed to load music from " + music_path)
-		var video_path = str(song_path, "/", Global.pak_reader.find_in_config(song_path,true,"video"))
-		var video = VideoStreamTheora.new()
+		var video_path = str(song_path, "/", Global.pak_reader.find_in_config(song_path,true,"background"))
+		var is_image = Global.pak_reader.is_song_background_image(song_path,true)
 		if video_path:
-			video.file = video_path
-			if video:
-				$VideoStreamPlayer.stream = video
+			if is_image:
+				var img = Image.new()
+				img.load(video_path)
+				$BackgroundImage.texture = ImageTexture.create_from_image(img)
+			else:
+				$VideoPlayback.set_video_path(ProjectSettings.globalize_path(video_path))
 		var time = Global.pak_reader.find_in_config(song_path,true,"song_start")
 		end_time = Global.pak_reader.find_in_config(song_path,true,"song_end")
 		if time.is_valid_float():
@@ -135,7 +140,11 @@ func _ready() -> void:
 		if time < 0:
 			time = 0.0
 		$AudioStreamPlayer.play(time)
-		$VideoStreamPlayer.play()
+		if is_image:
+			$BackgroundImage.show()
+		else:
+			$VideoPlayback.show()
+			$VideoPlayback.enable_auto_play = true
 	note_events.sort()
 
 
@@ -332,11 +341,11 @@ func _process(delta: float) -> void:
 		if float(end_time) != 0:
 			if float(end_time) - current_time <= 1:
 				$AudioStreamPlayer.stop()
-				$VideoStreamPlayer.stop()
+				$VideoPlayback.queue_free()
 	
 	if _prev_score != score || _prev_combo != combo: #designed so it doesn't change text every frame and attempt to do it only when needed
 		if score_text:
-			score_text.text = str("Score: ",score," (",get_current_rating()," / ",get_overall_rating(),")\n","Biggest Combo: ",max_combo,"" if not extra_info else str("\nRating Ratio: ", ratio, "\nPossible Score: ", total_possible_score, "\nTotal notes: ", total_notes,"\nPossible Combo: ",possible_combo))
+			score_text.text = str("Score: ",score," (",get_current_rating()," / ",get_overall_rating(),")\n","Biggest Combo: ",max_combo,"" if not extra_info else str("\nRating Ratio: ", round(ratio * 100.0) / 100.0, "\nPossible Score: ", total_possible_score, "\nTotal notes: ", total_notes,"\nPossible Combo: ",possible_combo))
 		_prev_score = score
 		_prev_combo = combo
 
@@ -370,7 +379,7 @@ func _input(event):
 func check_input(lane):
 	for note in get_children():
 		if note.has_meta("is_note"):
-			var true_note_pos = note.position.y + note.size.y
+			#var true_note_pos = note.position.y + note.size.y
 			var note_offset = note.get_meta("time") - current_time
 			
 			var note_scoring = score_note(note_offset)
@@ -382,7 +391,7 @@ func check_input(lane):
 					if note.get_meta("hit",""):
 						continue
 					if note.get_meta("type") == "hold":
-						var hit_offset = note.get_meta("time") - current_time
+						#var hit_offset = note.get_meta("time") - current_time
 						
 						var judgement = timing_displays[note_scoring]
 						var score_to_add = score_multipliers[note_scoring]
@@ -403,7 +412,7 @@ func check_input(lane):
 						note.get_child(0).text = str(note.get_meta("poly") - note.get_meta("hit_count"))
 						return
 					if note.get_meta("type") != "hold":
-						var hit_offset = note.get_meta("time") - current_time
+						#var hit_offset = note.get_meta("time") - current_time
 						
 						var judgement = timing_displays[note_scoring]
 						var score_to_add = score_multipliers[note_scoring]
@@ -445,30 +454,21 @@ func get_overall_rating() -> String:
 	return rating_from_ratio(ratio)
 
 
-func rating_from_ratio(ratio) -> String:
+func rating_from_ratio(ratio_to_rate) -> String:
 	if score == 0:
 		return ratings[ratings.size()-1] #NA
 	for i in ratings.size():
 		if i >= rating_ratios.size()-2: #F
 			return ratings[ratings.size()-2] #F
-		if ratio >= rating_ratios[i]:
+		if ratio_to_rate >= rating_ratios[i]:
 			return ratings[i]
 	return ratings[ratings.size()-1] #NA   this is for error prevention
 
 
 func get_rating(hit_offset: float) -> String:
-	if hit_offset <= timing_windows[0]:
-		return timing_displays[0]
-	elif hit_offset <= timing_windows[1]:
-		return timing_displays[1]
-	elif hit_offset <= timing_windows[2]:
-		return timing_displays[2]
-	elif hit_offset <= timing_windows[3]:
-		return timing_displays[3]
-	elif hit_offset <= timing_windows[4]:
-		return timing_displays[4]
-	elif hit_offset <= timing_windows[5]:
-		return timing_displays[5]
+	for i in timing_windows.size():
+		if hit_offset <= timing_windows[i]:
+			return timing_displays[i]
 	return ""
 
 
@@ -478,10 +478,10 @@ func update_combo(value):
 		max_combo = combo
 
 
-func score_note(offset):
-	offset = abs(offset)
+func score_note(offset_):
+	offset_ = abs(offset_)
 	for i in timing_windows.size():
-		if offset <= timing_windows[i]:
+		if offset_ <= timing_windows[i]:
 			return i
 
 
@@ -504,9 +504,9 @@ func miss_lane(lane: int) -> void:
 
 	var tween := create_tween()
 
-	var fade_in = tween.tween_property(highlight, "modulate:a", 1.0, 0.1)
+	tween.tween_property(highlight, "modulate:a", 1.0, 0.1)
 	tween.tween_interval(0.05)
-	var fade_out = tween.tween_property(highlight, "modulate:a", 0.0, 0.1)
+	tween.tween_property(highlight, "modulate:a", 0.0, 0.1)
 	tween.tween_callback(Callable(highlight, "hide"))
 
 

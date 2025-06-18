@@ -1,6 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://bcds32gyse1x5"]
+[gd_scene load_steps=15 format=3 uid="uid://bcds32gyse1x5"]
 
 [ext_resource type="Script" path="res://play/play.gd" id="1_d4ve6"]
+[ext_resource type="Script" path="res://addons/gde_gozen/video_playback.gd" id="2_ntrav"]
 [ext_resource type="FontFile" uid="uid://brb0fwgeqxoch" path="res://resources/Vividly-extended-Regular.ttf" id="2_rig6f"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gt31y"]
@@ -46,13 +47,34 @@ font_color = Color(1, 1, 1, 0.262745)
 script = ExtResource("1_d4ve6")
 score_text = NodePath("Label")
 
-[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
-z_index = -4
-offset_right = 1152.0
-offset_bottom = 648.0
-volume_db = -80.0
-expand = true
-buffering_msec = 1000
+[node name="VideoPlayback" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_ntrav")
+enable_audio = false
+
+[node name="BackgroundImage" type="TextureRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+self_modulate = Color(1, 1, 1, 0.501961)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="hit_line" type="ColorRect" parent="."]
 z_index = 1

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Mina-Rhythm"
-config/version="beta 1.6s"
+config/version="beta 1.9"
 config/tags=PackedStringArray("game", "mina_rhythm")
 run/main_scene="res://main_menu/menu.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
@@ -35,7 +35,7 @@ window/vsync/vsync_mode=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/controller_icons/plugin.cfg")
+enabled=PackedStringArray("res://addons/controller_icons/plugin.cfg", "res://addons/gde_gozen/plugin.cfg", "res://addons/gdscript_audio_impor/plugin.cfg", "res://addons/gdscript_audio_import/plugin.cfg")
 
 [input]
 

@@ -7,7 +7,7 @@ var IRLS = preload("res://misc/IRLS.gd").new()
 
 var settings_file = "user://user_data/settings.json"
 
-var Settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":0,"vsync":DisplayServer.VSyncMode.VSYNC_DISABLED,"show_fps":true}
+var Settings = {}
 var default_settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false}
 
 var fps_counter
@@ -72,6 +72,56 @@ func _process(_delta: float) -> void:
 			fps_counter.text = str(current_fps)+" FPS"
 			last_fps = current_fps
 
+const INDICATOR_CHR = '￼'
+
+func sanitize_json(value):
+	if typeof(value) == TYPE_DICTIONARY:
+		var new_dict = {}
+		for k in value.keys():
+			new_dict[k] = sanitize_json(value[k])
+		return new_dict
+	elif typeof(value) == TYPE_ARRAY:
+		var new_arr = []
+		for v in value:
+			new_arr.append(sanitize_json(v))
+		return new_arr
+	elif typeof(value) == TYPE_FLOAT:
+		if is_nan(value):
+			return INDICATOR_CHR + "NaN" + INDICATOR_CHR
+		elif value == INF:
+			return INDICATOR_CHR + "INF" + INDICATOR_CHR
+		elif value == -INF:
+			return INDICATOR_CHR + "-INF" + INDICATOR_CHR
+		else:
+			return value
+	else:
+		return value
+
+func unsanitize_json(value):
+	if typeof(value) == TYPE_DICTIONARY:
+		var new_dict = {}
+		for k in value.keys():
+			new_dict[k] = unsanitize_json(value[k])
+		return new_dict
+	elif typeof(value) == TYPE_ARRAY:
+		var new_arr = []
+		for v in value:
+			new_arr.append(unsanitize_json(v))
+		return new_arr
+	elif typeof(value) == TYPE_STRING and value.begins_with(INDICATOR_CHR) and value.ends_with(INDICATOR_CHR):
+		var content = value.substr(1, value.length() - 2)
+		match content:
+			"NaN":
+				return NAN
+			"INF":
+				return INF
+			"-INF":
+				return -INF
+			_:
+				return value
+	else:
+		return value
+
 func load_json_dict(path: String) -> Dictionary:
 	var file = FileAccess.open(path, FileAccess.READ)
 	if file == null:
@@ -81,7 +131,7 @@ func load_json_dict(path: String) -> Dictionary:
 	var text = file.get_as_text()
 	var result = JSON.parse_string(text)
 	if result is Dictionary:
-		return result
+		return unsanitize_json(result)
 	else:
 		push_error("JSON file does not contain a dictionary: " + path)
 		return {}
@@ -91,8 +141,8 @@ func save_json_dict(path: String, data: Dictionary) -> void:
 	if file == null:
 		push_error("Failed to open file for writing: " + path)
 		return
-
-	var json_text = JSON.stringify(data, "\t")
+	var sanitized_data = sanitize_json(data)
+	var json_text = JSON.stringify(sanitized_data, "\t")
 	file.store_string(json_text)
 	file.flush()
 	file.close()

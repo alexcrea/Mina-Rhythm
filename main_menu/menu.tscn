@@ -31,16 +31,23 @@ font_size = 13
 follow_viewport_enabled = true
 script = ExtResource("1_ufmj0")
 
-[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
-self_modulate = Color(0.55, 0.55, 0.55, 0.266667)
-z_index = -3
-offset_right = 1153.0
-offset_bottom = 648.0
-mouse_filter = 2
-volume_db = -80.0
-expand = true
-loop = true
-buffering_msec = 1000
+[node name="BackgroundImage" type="TextureRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+
+[node name="preview dim" type="ColorRect" parent="."]
+self_modulate = Color(1, 1, 1, 0.501961)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="ColorRect3" type="ColorRect" parent="."]
 z_index = -4

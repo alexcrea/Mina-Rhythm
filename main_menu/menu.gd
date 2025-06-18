@@ -41,6 +41,7 @@ func _on_file_dialog_files_selected(paths: PackedStringArray) -> void:
 	show_import_dialog = true
 	emit_signal("import",success)
 
+#could be replaced by a signal instead of process
 func _process(_delta: float) -> void:
 	if show_import_dialog:
 		if import_dialog.length() > 2:
