@@ -43,7 +43,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-windows
+          name: ${{ env.EXPORT_NAME }}-Windows
           path: build/windows
 
   export-linux:
@@ -69,5 +69,41 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-linux
+          name: ${{ env.EXPORT_NAME }}-Linux
           path: build/linux
+
+
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    needs: [export-linux, export-windows]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Linux Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.EXPORT_NAME }}-Linux
+      - name: Download Window Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.EXPORT_NAME }}-Windows
+
+      # we will be using the small commit hash as part of the tag
+      - name: Get small commit hash
+        run: echo "SMALL_COMMIT_HASH=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+          target_commitish: ${{ github.sha }}
+          name: dev-${{ env.SMALL_COMMIT_HASH }}
+          tag_name: dev-${{ env.SMALL_COMMIT_HASH }}
+          body_path: CHANGELOG.md
+          files: |
+            ${{ env.GITHUB_WORKSPACE }}/${{ env.EXPORT_NAME }}-Linux.zip
+            ${{ env.GITHUB_WORKSPACE }}/${{ env.EXPORT_NAME }}-Windows.zip
