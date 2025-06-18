@@ -43,7 +43,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-windows
+          name: ${{ env.EXPORT_NAME }}-Windows
           path: build/windows
 
   export-linux:
@@ -69,5 +69,52 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-linux
+          name: ${{ env.EXPORT_NAME }}-Linux
           path: build/linux
+
+
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    needs: [export-linux, export-windows]
+    steps:
+      - name: Set builds name
+        run: |
+          echo "LINUX_ARTIFACT_NAME=${{ env.EXPORT_NAME }}-Linux" >> $GITHUB_ENV
+          echo "WINDOWS_ARTIFACT_NAME=${{ env.EXPORT_NAME }}-Windows" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # we will be using the small commit hash as part of the tag
+      - name: Get small commit hash
+        run: echo "SMALL_COMMIT_HASH=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Zip Builds
+        run: |
+          zip -r ${{ env.LINUX_ARTIFACT_NAME }}.zip ${{ env.LINUX_ARTIFACT_NAME }}
+          zip -r ${{ env.WINDOWS_ARTIFACT_NAME }}.zip ${{ env.WINDOWS_ARTIFACT_NAME }}
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HH-mm-ssSSSS
+          utcOffset: "+08:00"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+          target_commitish: ${{ github.sha }}
+          name: ${{ env.EXPORT_NAME }}-beta-${{ steps.current-time.outputs.formattedTime }}
+          tag_name: beta-${{ env.SMALL_COMMIT_HASH }}
+          body_path: CHANGELOG.md
+          files: |
+            ${{ env.LINUX_ARTIFACT_NAME }}.zip
+            ${{ env.WINDOWS_ARTIFACT_NAME }}.zip
