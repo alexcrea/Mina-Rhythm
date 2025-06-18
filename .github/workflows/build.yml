@@ -16,6 +16,8 @@ env:
   GODOT_VERSION: 4.3 # Do not change unless well tested. we had issue with 4.4
   EXPORT_NAME: Mina-Rhythm
   PROJECT_PATH: "."
+  LINUX_ARTIFACT_NAME: Mina-Rhythm-Linux
+  WINDOWS_ARTIFACT_NAME: Mina-Rhythm-Windows
 
 jobs:
   export-windows:
@@ -43,7 +45,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-Windows
+          name: ${{ env.WINDOWS_ARTIFACT_NAME }}
           path: build/windows
 
   export-linux:
@@ -69,7 +71,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-Linux
+          name: ${{ env.LINUX_ARTIFACT_NAME }}
           path: build/linux
 
 
@@ -78,11 +80,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [export-linux, export-windows]
     steps:
-      - name: Set builds name
-        run: |
-          echo "LINUX_ARTIFACT_NAME=${{ env.EXPORT_NAME }}-Linux" >> $GITHUB_ENV
-          echo "WINDOWS_ARTIFACT_NAME=${{ env.EXPORT_NAME }}-Windows" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v4
 
