@@ -109,8 +109,8 @@ jobs:
           prerelease: true
           generate_release_notes: true
           target_commitish: ${{ github.sha }}
-          name: ${{ env.EXPORT_NAME }}-beta-${{ steps.current-time.outputs.formattedTime }}
-          tag_name: beta-${{ env.SMALL_COMMIT_HASH }}
+          name: ${{ env.EXPORT_NAME }} beta-${{ env.SMALL_COMMIT_HASH }}
+          tag_name: beta-${{ steps.current-time.outputs.formattedTime }}
           body_path: CHANGELOG.md
           files: |
             ${{ env.LINUX_ARTIFACT_NAME }}.zip
