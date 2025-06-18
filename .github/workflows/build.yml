@@ -1,7 +1,7 @@
 name: "godot-ci build"
 
 on:
-  push: { "main" }
+  push: { "main" , "feature/gh-action-build-test" }
   #if you want to build on pull request uncomment bellow
   #pull_request: { "main" }
 
