@@ -39,7 +39,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows
+          name: $EXPORT_NAME-windows
           path: build/windows
 
   export-linux:
@@ -65,5 +65,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linux
+          name: $EXPORT_NAME-linux
           path: build/linux
