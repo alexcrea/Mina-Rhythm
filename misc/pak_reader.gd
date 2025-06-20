@@ -31,6 +31,9 @@ func parse_config(pak_path:String,unpacked:bool) -> PackedStringArray:
 	for header in headers:
 		while config_lines.find(header) != -1:
 			config_lines.remove_at(config_lines.find(header))
+	for i in config_lines.size()-1:
+		if config_lines[i-1].begins_with("##"):
+			config_lines.remove_at(i-1)
 	return config_lines
 
 func find_in_config(pak_path:String,unpacked:bool,key:String) -> String:
@@ -150,33 +153,36 @@ func parse_beatmap(beatmap_path: String) -> Array:
 	return notes
 
 func import_minapak(pak_path:String) -> String:
-	var reader = ZIPReader.new() 
-	reader.open(pak_path)
-	var pak_name:String
-	pak_name = find_in_config(pak_path,false,"pack_name")
-	if !DirAccess.dir_exists_absolute(str("user://songs")):
-		if DirAccess.make_dir_absolute(str("user://songs")) != OK:
-			return str("failed: song directory")
-	if !DirAccess.dir_exists_absolute(str("user://songs/",pak_name)):
-		if DirAccess.make_dir_absolute(str("user://songs/",pak_name)) != OK:
-			return str("failed: ",pak_name)
+	if pak_path.to_lower().ends_with(".osz"):
+		return import_osumania(pak_path)
 	else:
-		print("pak already exists at: user://songs/",pak_name)
-		return str("exists: ",pak_name)
-	for file in reader.get_files():
-		if FileAccess.file_exists(str("user://songs/",pak_name,"/",file)):
-			push_error("error importing pak, file: ",file," already exists in user://songs/",pak_name)
+		var reader = ZIPReader.new() 
+		reader.open(pak_path)
+		var pak_name:String
+		pak_name = find_in_config(pak_path,false,"pack_name")
+		if !DirAccess.dir_exists_absolute(str("user://songs")):
+			if DirAccess.make_dir_absolute(str("user://songs")) != OK:
+				return str("failed: song directory")
+		if !DirAccess.dir_exists_absolute(str("user://songs/",pak_name)):
+			if DirAccess.make_dir_absolute(str("user://songs/",pak_name)) != OK:
+				return str("failed: ",pak_name)
 		else:
-			var writefile = FileAccess.open(str("user://songs/",pak_name,"/",file),FileAccess.WRITE)
-			var contents = reader.read_file(file)
-			writefile.store_buffer(contents)
-			writefile.close()
-	while not FileAccess.file_exists(str("user://songs/",pak_name,"/pak_config.ini")):
-		await get_tree().process_frame
-	if not FileAccess.get_file_as_bytes(str("user://songs/",pak_name,"/pak_config.ini")):
-		while not FileAccess.get_file_as_bytes(str("user://songs/",pak_name,"/pak_config.ini")):
+			print("pak already exists at: user://songs/",pak_name)
+			return str("exists: ",pak_name)
+		for file in reader.get_files():
+			if FileAccess.file_exists(str("user://songs/",pak_name,"/",file)):
+				push_error("error importing pak, file: ",file," already exists in user://songs/",pak_name)
+			else:
+				var writefile = FileAccess.open(str("user://songs/",pak_name,"/",file),FileAccess.WRITE)
+				var contents = reader.read_file(file)
+				writefile.store_buffer(contents)
+				writefile.close()
+		while not FileAccess.file_exists(str("user://songs/",pak_name,"/pak_config.ini")):
 			await get_tree().process_frame
-	return str("success: ",pak_name)
+		if not FileAccess.get_file_as_bytes(str("user://songs/",pak_name,"/pak_config.ini")):
+			while not FileAccess.get_file_as_bytes(str("user://songs/",pak_name,"/pak_config.ini")):
+				await get_tree().process_frame
+		return str("success: ",pak_name)
 
 func is_song_background_image(pak_path:String,unpacked:bool) -> bool:
 	var bg = find_in_config(pak_path,unpacked,"background")
@@ -189,19 +195,25 @@ func import_osumania(path: String) -> String:
 	var reader = ZIPReader.new()
 	if reader.open(path) != OK:
 		return str("failed: osz file may be corrupted")
-
+	
+	var files_to_copy:PackedStringArray = []
 	var beatmaps = []
 	for file in reader.get_files():
-		if file.ends_with(".osu"):
+		if file.to_lower().ends_with(".osu"):
 			var raw = reader.read_file(file).get_string_from_utf8()
 			var lines = raw.split("\n")
 			var section = ""
 			
 			var metadata = {
+				"beatmap_path":file,
 				"artist": "",
 				"title": "",
 				"creator": "",
 				"version": "",
+				"audio_filename": "",
+				"audio_lead_in": 0,
+				"epilepsy_warning": null,
+				"background": "",
 				"approach_rate": null,
 				"overall_difficulty": null,
 				"hp_drain_rate": null,
@@ -219,6 +231,15 @@ func import_osumania(path: String) -> String:
 					continue
 
 				match section:
+					"[General]":
+						if line.begins_with("AudioFilename:"):
+							metadata.audio_filename = line.trim_prefix("AudioFilename:").strip_edges()
+							files_to_copy.append(metadata.audio_filename)
+						elif line.begins_with("AudioLeadIn:"):
+							metadata.audio_lead_in = float(line.trim_prefix("AudioLeadIn:").strip_edges())
+						elif line.begins_with("EpilepsyWarning:"):
+							metadata.epilepsy_warning = true if line.trim_prefix("EpilepsyWarning:").strip_edges() == '1' else false
+
 					"[Metadata]":
 						if line.begins_with("Title:"):
 							metadata.title = line.trim_prefix("Title:").strip_edges()
@@ -252,25 +273,55 @@ func import_osumania(path: String) -> String:
 					"[HitObjects]":
 						if line != "":
 							metadata.hit_objects.append(line)
+					
+					"[Events]":
+						if line.begins_with("0,0,\"") && line.ends_with("\",0,0"):
+							metadata.background = line.trim_prefix("0,0,\"").trim_suffix("\",0,0").strip_edges()
+							files_to_copy.append(metadata.background)
 
-			if metadata["CircleSize"] == 4:
-				beatmaps.append(metadata)
+			beatmaps.append(metadata)
 	
 	if !DirAccess.dir_exists_absolute(str("user://songs")):
 		if DirAccess.make_dir_absolute(str("user://songs")) != OK:
 			return str("failed: song directory")
-	var song_name = path.get_file().get_basename()
+	var song_name = beatmaps[0].title
 	if !DirAccess.dir_exists_absolute(str("user://songs/",song_name)):
 		if DirAccess.make_dir_absolute(str("user://songs/",song_name)) != OK:
 			return str("failed: ",song_name)
 	else:
 		print("pak already exists at: user://songs/",song_name)
 		return str("exists: ",song_name)
+
+	for file in clean_string_array(files_to_copy):
+		if FileAccess.file_exists(str("user://songs/",song_name,"/",file)):
+			push_error("error importing pak, file: ",file," already exists in user://songs/",song_name)
+		else:
+			var writefile = FileAccess.open(str("user://songs/",song_name,"/",file),FileAccess.WRITE)
+			var contents = reader.read_file(file)
+			writefile.store_buffer(contents)
+			writefile.close()
+	if FileAccess.file_exists(str("user://songs/",song_name,"/pak_config.ini")):
+		push_error("error importing pak, file: pak_config.ini already exists in user://songs/",song_name)
+	else:
+		var writefile = FileAccess.open(str("user://songs/",song_name,"/pak_config.ini"),FileAccess.WRITE)
+		var contents = "[PackInfo]\npack_name="+song_name+"\nicon=pack_icon.svg\n[Resources]\nsong="+beatmaps[0].audio_filename+"\nbeatmap=beatmap.minamap\nbackground="+beatmaps[0].background+"\nbottom_fade=true\ndesc=\ncredits="+beatmaps[0].artist+"\npak_creator="+beatmaps[0].creator+"\n"
+		writefile.store_string(contents)
+		writefile.close()
+		
+		var icon = FileAccess.open(str("user://songs/",song_name,"/pack_icon.svg"),FileAccess.WRITE)
+		var src = FileAccess.open("res://resources/osu_logo.svg",FileAccess.READ)
+		icon.store_string(src.get_as_text())
+		icon.close()
+		src.close()
+		
+		for beatmap in beatmaps:
+			var file = FileAccess.open(str("user://songs/",song_name,"/",beatmap.beatmap_path.trim_suffix(".osu"),".minamap"),FileAccess.WRITE)
+			var map = parse_osumania(beatmap.hit_objects,beatmap.slider_multiplier,beatmap.first_beat_length)
+			file.store_string(map)
+			file.close()
 	return str("success: ",song_name)
-	
 
-
-func parse_osumania(hitobjects: Array, slider_multiplier: float = 1.4, beat_length: float = 500.0) -> Array:
+func parse_osumania(hitobjects: Array, slider_multiplier: float = 1.4, beat_length: float = 500.0) -> String:
 	var parsed = []
 	var lane_width = 128
 
@@ -286,6 +337,8 @@ func parse_osumania(hitobjects: Array, slider_multiplier: float = 1.4, beat_leng
 		var time = int(parts[2])
 		var type = int(parts[3])
 		var lane = int(float(x) / lane_width)
+		if lane > 3:
+			lane = 3
 
 		if type & 1 != 0:
 			parsed.append("[tap]%d?%d" % [lane, time])
@@ -303,4 +356,17 @@ func parse_osumania(hitobjects: Array, slider_multiplier: float = 1.4, beat_leng
 		else:
 			continue
 
-	return parsed
+	var beatmap = ""
+	for line in parsed:
+		beatmap += line+"\n"
+
+	return beatmap
+
+func clean_string_array(arr: Array) -> Array:
+	var seen := {}
+	var result := []
+	for item in arr:
+		if not seen.has(item):
+			seen[item] = true
+			result.append(item)
+	return result

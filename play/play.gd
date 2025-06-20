@@ -17,7 +17,7 @@ var score: int = 0
 @export var score_text:Label
 var total_possible_score: int = 0
 var total_notes: int = 0
-var auto_play := false
+var auto_play := true
 var extra_info := true
 var end_time
 const HOLD_ACTIVATION_THRESHOLD = 100

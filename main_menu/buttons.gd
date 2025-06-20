@@ -3,11 +3,15 @@ extends Control
 @export var button_scene:= preload("res://main_menu/song_button.tscn")
 @export var info_scene:= preload("res://main_menu/info_panel.tscn")
 @export var play_scene:= preload("res://play/play.tscn")
+@export var minamap_scene:= preload("res://main_menu/beatmap_button.tscn")
 
 var song_paths:Array = []
 var songs : Array = []  # Array to store song information
+var beatmaps : Array = []
+var beatmap_buttons : Array[Node] = []
 var selected_index : int = 0  # Index of the currently selected song
-var buttons : Array[Node]
+var selected_beatmap_index : int = -1
+var buttons : Array[Node] = []
 var _trans_to_play = false
 var _seperation_factor = 100
 var _x_factor = -50
@@ -17,7 +21,9 @@ var audioplayer:AudioStreamPlayer
 var videoplayer:VideoPlayback
 var backgroundimage:TextureRect
 var curr_info_box:Node
-var ignore_button:= false
+
+var in_beatmap_menu:= false
+var beatmap_selected_once:=false
 
 func _ready():
 	populate_song_list()
@@ -71,6 +77,7 @@ func _on_button_pressed(index: int):
 			button.set_meta("selected_once", false)
 		button_node.set_meta("selected_once", true)
 		selected_index = index
+		selected_beatmap_index = -1
 		init_new_audioplayer()
 		init_new_videoplayer()
 		init_new_backgroundimage()
@@ -112,9 +119,28 @@ func apply_selected_effect(button,start_or_end:bool):
 	else:
 		tween.tween_property(button, "position:x", button.get_meta("original_x"), 0.1).set_ease(Tween.EASE_OUT)
 
+func _on_beatmap_selected(index: int):
+	var button_node: Control = null
+
+	for button in %VBoxContainer.get_children():
+		if button is Control and button.has_method("get_id") and button.id == index:
+			button_node = button
+			break
+
+	if button_node == null:
+		return
+	
+	if !beatmap_selected_once:
+		beatmap_selected_once = true
+	else:
+		selected_beatmap_index = button_node.get_id()
+		beatmap_selected_once = false
+		in_beatmap_menu = false
+		
+
 func scroll_to_selected(button):
 	var is_add_song_button = button.has_meta("add_song_button")
-	if button.has_meta("add_song_button") || FileAccess.file_exists(str(song_paths[button.id],"/pak_config.ini")) || selected_index == 0:
+	if is_add_song_button || FileAccess.file_exists(str(song_paths[button.id],"/pak_config.ini")) || selected_index == 0:
 		scroll_container.ensure_control_visible(button)
 		var info_box = info_scene.instantiate()
 		if is_add_song_button:
@@ -142,6 +168,26 @@ func scroll_to_selected(button):
 		var tween = create_tween()
 		tween.set_trans(Tween.TRANS_SINE)
 		tween.tween_property(info_box, "position:x", 670, 0.3).set_ease(Tween.EASE_OUT)
+		if !is_add_song_button:
+			var song_dir = DirAccess.open(song_paths[selected_index])
+			var minamaps:PackedStringArray = []
+			for file in song_dir.get_files():
+				if file.to_lower().ends_with(".minamap"):
+					minamaps.append(file)
+		
+			for i in minamaps.size():
+				var minamap_button = minamap_scene.instantiate()
+				minamap_button.label.text = minamaps[i].trim_suffix(".minamap")
+				minamap_button.id = i
+				minamap_button.connect("pressed", Callable(self, "_on_beatmap_selected"),i)
+				%VBoxContainer.add_child.call_deferred(minamap_button)
+			if minamaps.size() > 1:
+				%SelectedBeatmap.label.text = "Select beatmap"
+				%BeatmapMenu.show()
+				in_beatmap_menu = true
+			elif minamaps.size() <= 1:
+				%SelectedBeatmap.hide()
+				selected_beatmap_index = 0
 	else:
 		%AcceptDialog.title = "Oh noe!"
 		%AcceptDialog.dialog_text = str("Song \"",songs[button.id],"\" could not be found! please make sure its installed correctly! wan wan!")
@@ -156,14 +202,6 @@ func play_preview(index):
 
 		var loader := AudioLoader.new()
 		var stream = loader.loadfile(music_path,true)
-		#if music_path.ends_with(".ogg"):
-			#stream = AudioStreamOggVorbis.load_from_file(music_path)
-		#elif music_path.ends_with(".mp3"):
-			#var file = FileAccess.open(music_path, FileAccess.READ)
-			#if file:
-				#var mp3 = AudioStreamMP3.new()
-				#mp3.data = file.get_buffer(file.get_length())
-				#stream = mp3
 		if stream:
 			audioplayer.stop()
 			audioplayer.stream = stream
@@ -256,7 +294,6 @@ func pop_song(pop_index:= -1):
 			button.set_meta("original_y",button.position.y)
 		if selected_index >= buttons.size():
 			selected_index = max(0, buttons.size() - 2)
-		ignore_button = true
 		await get_tree().process_frame
 	scroll_container.size.y = buttons.size() * _seperation_factor + 50
 
@@ -313,9 +350,21 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			if event.is_action_pressed("lane1",true):
 				if selected_index-1 >= 0:
-					_on_button_pressed(selected_index-1)
+					if in_beatmap_menu:
+						pass
+					else:
+						buttons[selected_index-1]._on_button_pressed()
+						buttons[selected_index+1]._on_button_mouse_entered()
+			
 			elif event.is_action_pressed("lane2",true):
 				if selected_index+1 < buttons.size():
-					_on_button_pressed(selected_index+1)
+					if in_beatmap_menu:
+						pass
+					else:
+						buttons[selected_index+1]._on_button_pressed()
+						buttons[selected_index-1]._on_button_mouse_entered()
 			elif event.is_action_pressed("ui_accept"):
-				_on_button_pressed(selected_index)
+				if in_beatmap_menu:
+					pass
+				else:
+					_on_button_pressed(selected_index)
